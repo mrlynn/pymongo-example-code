@@ -5,10 +5,10 @@ The first example is for MongoDB 4.0 and shows the transactions code
 in action.
 
 ```
-cd transactions
-./setup.sh
+**cd transactions**
+**./setup.sh**
 
-python transactions_main.py -h
+**python transactions_main.py -h**
 usage: transaction_main.py [-h] [--host HOST] [--usetxns] [--delay DELAY]
                            [--iterations ITERATIONS]
 
