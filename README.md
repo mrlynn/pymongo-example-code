@@ -108,7 +108,7 @@ optional arguments:
   
 We need to watch each collection so in each window start the watcher.
 
-Wndow 1:
+Window 1:
 ```
 $ python watch_collection.py --watch PYTHON_TXNS_EXAMPLE.seats
 Watching: PYTHON_TXNS_EXAMPLE.seats
@@ -116,8 +116,8 @@ Watching: PYTHON_TXNS_EXAMPLE.seats
 
 Window 2:
 ```
-$ python watch_collection.py --watch PYTHON_TXNS_EXAMPLE.payment
-Watching: PYTHON_TXNS_EXAMPLE.payment
+$ python watch_collection.py --watch PYTHON_TXNS_EXAMPLE.payments
+Watching: PYTHON_TXNS_EXAMPLE.payments
 ```
 
 ## What Happens when you use transactions
