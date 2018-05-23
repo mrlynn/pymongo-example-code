@@ -44,7 +44,7 @@ local operation ```--host``` is probably not required. Note that the
 program defaults to using a replicaSet **txntest** which is the
 replica set name that is configured in the server in ```setup.sh```
 
-To run the program with transactions you can run it with no arguments
+To run the program without transactions you can run it with no arguments:
 
 ```$ source venv/bin/activate
 (venv)$ python transaction_main.py
@@ -63,7 +63,7 @@ Paying 500 for seat '3A'
 ```
 
 Now run it with transactions turned on. This is a useful test to
-ensure the environment is configured correctly.
+ensure the environment is configured correctly:
 
 ```
 (venv) $ python transaction_main.py --usetxns
@@ -93,9 +93,10 @@ changestreams](https://docs.mongodb.com/manual/changeStreams/)
 to see whats happening inside a collection in real-time. We need run
 two of these in parallel so its best to line them up side by side.
 
-here is the help:
+here is the ```watch_collection.py``` program:
 
 ```
+$ python watch_collection.py
 usage: watch_collection.py [-h] [--host HOST] [--watch WATCH]
 
 optional arguments:
@@ -139,3 +140,16 @@ def txn_sequence(seats, payments, seat_no, delay, session=None):
     print( "Paying {} for seat '{}'".format(price, seat_str))
 
 ```
+
+This program emulates a very simplified airline booking with a seat
+being allocated and then paid for. These happen at different times and
+we emulate this by inserting a random delay (the default is between 1
+and 3 seconds).
+
+If we run the program without transactions then we will see these
+delays reported by the ```watch_collection.py``` programs.
+
+Now if we run the same program with the ```--usetxns``` we will see
+that the change streams become synchronised because both collections
+only see the changes when the `end_transaction()` call happens. In
+python the ```with`` clause ensures this happens.
