@@ -9,11 +9,12 @@ including
 * Downloading and installing MongoDB 4.0 RC0
 * Setting up a python virtualenv
 * Install the beta version of the Python MongoDB Driver (pymongo)
-* Install mtools to allow easy starting of a [replica set](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/)
+* Install mtools to allow easy starting of a
+[replica set](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/).
 (transactions require a replica set)
-* start a replica set
+* Sstart a replica set.  The replica set name is **txntest**.
 
-All this is achieved using a single setup script. 
+All this is achieved using a single ```setup.sh``` script. 
 
 <pre>
 <b>cd transactions</b>
@@ -31,4 +32,110 @@ optional arguments:
   --iterations ITERATIONS   Run 3 iterations
   </pre>
 
-## Running the examle
+After ```setup.sh``` has completed you can start and stop the server by
+running ``mongod.sh``  with the ```start``` or ```stop``` parameter.
+
+## Running the transactions example
+
+The transactions example consists of two python
+programs. ```transactions_main.py``` and ```watch_collection.py```.
+As you can see above ```transactions_main.py``` has few options. For
+local operation ```--host``` is probably not required. Note that the
+program defaults to using a replicaSet **txntest** which is the
+replica set name that is configured in the server in ```setup.sh```
+
+To run the program with transactions you can run it with no arguments
+
+```$ source venv/bin/activate
+(venv)$ python transaction_main.py
+using collection: PYTHON_TXNS_EXAMPLE.seats
+using collection: PYTHON_TXNS_EXAMPLE.payments
+Booking seat: '1A'
+Sleeping: 0.9990250744702165
+Paying 500 for seat '1A'
+Booking seat: '2A'
+Sleeping: 0.802693439030369
+Paying 500 for seat '2A'
+Booking seat: '3A'
+Sleeping: 0.8532081718219303
+Paying 500 for seat '3A'
+(venv) $
+```
+
+Now run it with transactions turned on. This is a useful test to
+ensure the environment is configured correctly.
+
+```
+(venv) $ python transaction_main.py --usetxns
+using collection: PYTHON_TXNS_EXAMPLE.seats
+using collection: PYTHON_TXNS_EXAMPLE.payments
+Using transactions
+Booking seat: '1A'
+Sleeping: 0.13754149185618314
+Paying 500 for seat '1A'
+Using transactions
+Booking seat: '2A'
+Sleeping: 0.35207015352640436
+Paying 500 for seat '2A'
+Using transactions
+Booking seat: '3A'
+Sleeping: 0.9508466296765761
+Paying 500 for seat '3A'
+(venv) $
+```
+
+To actually see the effect of transactions we need to watch what is
+happening inside the collections ```PYTHON_TXNS_EXAMPLE.seats``` ```
+PYTHON_TXNS_EXAMPLE.payments```.
+
+We can do this with ```watch_collection.py```. The uses [MongoDB
+changestreams](https://docs.mongodb.com/manual/changeStreams/)
+to see whats happening inside a collection in real-time. We need run
+two of these in parallel so its best to line them up side by side.
+
+here is the help:
+
+```
+usage: watch_collection.py [-h] [--host HOST] [--watch WATCH]
+
+optional arguments:
+  -h, --help              show this help message and exit
+  --host HOST          mongodb URI for connecting to server [default:
+                                 mongodb://localhost:27017/?replicaSet=txntest]
+  --watch WATCH     Watch <database.colection> [default: test.test]
+```
+  
+We need to watch each collection so in each window start the watcher.
+
+Wndow 1:
+```
+$ python watch_collection.py --watch PYTHON_TXNS_EXAMPLE.seats
+Watching: PYTHON_TXNS_EXAMPLE.seats
+```
+
+Window 2:
+```
+$ python watch_collection.py --watch PYTHON_TXNS_EXAMPLE.payment
+Watching: PYTHON_TXNS_EXAMPLE.payment
+```
+
+## What Happens when you use transactions
+
+Lets run the code without transactions first. If you examine the
+```transactions_main.py``` code you will see a function
+``txn_sequence``.
+
+```
+def txn_sequence(seats, payments, seat_no, delay, session=None):
+    price=500
+    seat_str = "{}A".format(seat_no)
+    print( "Booking seat: '{}'".format(seat_str))
+    seats.insert_one({"flight_no": "EI178", "seat": seat_str, "date": datetime.utcnow()}, session=session)
+    if delay > 0 :
+        delay_period = random.uniform(0, delay)
+        print( "Sleeping: {}".format(delay_period))
+        time.sleep(delay_period)
+    payments.insert_one({"flight_no": "EI178", "seat" : seat_str, "date": datetime.utcnow(), "price": price},session=session)
+    print( "Paying {} for seat '{}'".format(price, seat_str))
+
+```
