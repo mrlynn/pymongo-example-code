@@ -4,7 +4,7 @@ Example code showing the MongoDB Python driver (Pymongo) in action.
 The first example is for MongoDB 4.0 and shows the transactions code
 in action.
 
-'''
+```
 cd transactions
 ./setup.sh
 
@@ -18,4 +18,4 @@ optional arguments:
   --usetxns                         Use transactions [default: False]
   --delay DELAY                  Delay between two insertion events [default: 1.0]
   --iterations ITERATIONS   Run 3 iterations
-  '''
+```
