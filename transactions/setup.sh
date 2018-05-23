@@ -38,5 +38,3 @@ if ! python -c "import pymongo" ;then
 fi
 
 ./mongod.sh start
-
-python featurecompatibility.py --feature_version 4.0
