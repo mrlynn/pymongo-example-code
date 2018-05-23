@@ -20,7 +20,7 @@ All this is achieved using a single ```setup.sh``` script.
 <b>cd transactions</b>
 <b>./setup.sh**</b>
 
-<b>python transactions_main.py -h</b>
+<b>python transaction_main.py -h</b>
 usage: transaction_main.py [-h] [--host HOST] [--usetxns] [--delay DELAY]
                            [--iterations ITERATIONS]
 
@@ -38,8 +38,8 @@ running ``mongod.sh``  with the ```start``` or ```stop``` parameter.
 ## Running the transactions example
 
 The transactions example consists of two python
-programs. ```transactions_main.py``` and ```watch_collection.py```.
-As you can see above ```transactions_main.py``` has few options. For
+programs. ```transaction_main.py``` and ```watch_collection.py```.
+As you can see above ```transaction_main.py``` has few options. For
 local operation ```--host``` is probably not required. Note that the
 program defaults to using a replicaSet **txntest** which is the
 replica set name that is configured in the server in ```setup.sh```
@@ -123,7 +123,7 @@ Watching: PYTHON_TXNS_EXAMPLE.payment
 ## What Happens when you use transactions
 
 Lets run the code without transactions first. If you examine the
-```transactions_main.py``` code you will see a function
+```transaction_main.py``` code you will see a function
 ``txn_sequence``.
 
 ```
